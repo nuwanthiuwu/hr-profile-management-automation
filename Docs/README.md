@@ -1,390 +1,317 @@
-# HR Profile Management Automation - Complete Setup Guide
+# HR Profile Management — Playwright Automation Framework
 
-## 📋 Quick Overview
-
-This package contains a **complete, production-ready Playwright automation framework** for the Smart HR admin login module using the **Page Object Model (POM)** pattern.
-
-**Application Under Test**: https://smart-hr-fe.vercel.app/login  
-**Test Credentials**: alex.morgan@smart-hr.com / 8A1HdsuUgrZR  
-**Framework**: Playwright + TypeScript  
-**Environment**: Local execution (sequential)  
-**Test Cases**: 8 complete test scenarios
+**Application under test:** https://smart-hr-fe.vercel.app  
+**Framework:** Playwright v1.60 + TypeScript  
+**Pattern:** Page Object Model (POM)  
+**Execution:** Headless Chromium, sequential  
+**Total tests:** 59 across 5 modules — all passing
 
 ---
 
-## 🎯 What's Included
+## Project Structure
 
-### 📁 Files in This Package
-
-1. **playwright.config.ts** - Playwright configuration for your environment
-2. **package.json** - NPM dependencies and scripts
-3. **test-data.json** - Configuration for test credentials and URLs
-4. **base.page.ts** - Base Page Object class with common utilities
-5. **login.page.ts** - Login page object with all selectors and methods
-6. **login.spec.ts** - Complete test specifications for all 8 test cases
-7. **PROJECT_STRUCTURE.md** - Recommended directory structure
-8. **.gitignore** - Git ignore file template
-9. **SETUP_INSTRUCTIONS.md** - Step-by-step setup guide
-10. **E2E_WORKFLOW.md** - Complete end-to-end workflow documentation
-
----
-
-## ⚡ Quick Start (5 Minutes)
-
-### Step 1: Create Project Directory
-```bash
-mkdir hr-profile-management-automation
-cd hr-profile-management-automation
-```
-
-### Step 2: Create Directory Structure
-```bash
-mkdir -p tests/{pages,specs/login,fixtures,utils}
-mkdir -p config test-results/{reports,screenshots} docs/{user-stories,defects} .github/workflows
-```
-
-### Step 3: Copy Files
-Copy all provided files to your project:
 ```
 hr-profile-management-automation/
-├── playwright.config.ts          (copy to root)
-├── package.json                  (copy to root)
-├── .gitignore                    (copy to root)
+├── playwright.config.ts          # Headless, screenshot + video on every test
+├── package.json
+├── tsconfig.json
 ├── config/
-│   └── test-data.json           (copy here)
+│   └── test-data.json            # Credentials, URLs, search terms, form data
+├── scripts/
+│   └── generate-summary.js       # Called by /run-tests to write session-summary.md
 ├── tests/
-│   └── pages/
-│       ├── base.page.ts         (copy here)
-│       └── login.page.ts        (copy here)
-│   └── specs/
-│       └── login/
-│           └── login.spec.ts    (copy here)
-└── docs/
-    └── user-stories/
-        └── Login_-_Smart_HR_Profile_Management_System_-_Admin.md
+│   ├── fixtures/
+│   │   ├── test-image.png        # 1×1 PNG for profile picture upload tests
+│   │   └── test-cv.pdf           # Minimal PDF for CV upload tests
+│   ├── pages/                    # Page Object Model files
+│   │   ├── base.page.ts
+│   │   ├── login.page.ts
+│   │   ├── navigation.page.ts
+│   │   ├── dashboard.page.ts
+│   │   └── employee.page.ts
+│   └── specs/                    # Test specifications
+│       ├── login/
+│       │   └── login.spec.ts     # TC_LOGIN_01–04, TC_FP_01–03  (12 tests)
+│       ├── menu/
+│       │   └── menu.spec.ts      # TC_MENU_01–06               (8 tests)
+│       ├── dashboard/
+│       │   └── dashboard.spec.ts # TC_DASH_01–09               (9 tests)
+│       └── employees/
+│           ├── employee.spec.ts        # TC_EMP_01–18           (18 tests)
+│           └── create-employee.spec.ts # TC_CREATE_EMP_01–12    (12 tests)
+├── Docs/
+│   ├── README.md                 # This file
+│   ├── DELIVERABLES_SUMMARY.md   # Full file inventory and test case listing
+│   ├── test-data.json            # Reference copy of config/test-data.json
+│   └── user-stories/             # Source user stories used for automation
+│       ├── Left menu and Dashboard .md
+│       └── Employee.md
+└── test-results/                 # Session folders created by /run-tests
+    └── YYYY-MM-DD_HH-MM-SS/
+        ├── reports/              # index.html, results.json, junit.xml
+        ├── evidence/             # screenshots + videos per test
+        └── session-summary.md    # Pass/fail table, failed test errors
 ```
 
-### Step 4: Install Dependencies
+---
+
+## Quick Start
+
 ```bash
 npm install
 npx playwright install chromium
+npm test
 ```
 
-### Step 5: Initialize Git
-```bash
-git init
-git remote add origin https://github.com/nuwanthiuwu/hr-profile-management-automation
-```
+To view the HTML report after a run:
 
-### Step 6: Run Tests
 ```bash
-npm run test:login
+npx playwright show-report test-results/reports
 ```
 
 ---
 
-## 🔧 Available Commands
+## Test Coverage
 
-| Command | Description |
+| Module | Test IDs | Tests | Status |
+|--------|----------|-------|--------|
+| Login & Forgot Password | TC_LOGIN_01–04, TC_FP_01–03 | 12 | All passing |
+| Left Side Menu | TC_MENU_01–06 | 8 | All passing |
+| Dashboard | TC_DASH_01–09 | 9 | All passing |
+| Employee List | TC_EMP_01–18 | 18 | All passing |
+| Create Employee | TC_CREATE_EMP_01–12 | 12 | All passing |
+| **Total** | | **59** | **All passing** |
+
+---
+
+## NPM Commands
+
+| Command | What it does |
 |---------|-------------|
-| `npm run test` | Run all tests |
-| `npm run test:login` | Run only login tests |
-| `npm run test:headed` | Run tests with visible browser |
-| `npm run test:ui` | Run tests in interactive UI mode |
-| `npm run test:debug` | Debug mode with inspector |
-| `npm run test:report` | Show HTML test report |
-| `npm run codegen` | Generate test code from browser interactions |
-
----
-
-## 📝 Test Cases Covered
-
-### Login Tests (TC_LOGIN_*)
-- ✅ **TC_LOGIN_01.1**: Toggle password visibility - hidden to visible
-- ✅ **TC_LOGIN_01.2**: Toggle password visibility - visible to hidden
-- ✅ **TC_LOGIN_02.1**: Error when both fields empty
-- ✅ **TC_LOGIN_02.2**: Error when email empty
-- ✅ **TC_LOGIN_02.3**: Error when password empty
-- ✅ **TC_LOGIN_03.1**: Successfully login with valid credentials
-- ✅ **TC_LOGIN_03.2**: Verify session created after login
-- ✅ **TC_LOGIN_04.1**: Remember Me persists session
-
-### Forgot Password Tests (TC_FP_*)
-- ✅ **TC_FP_01.1**: Send reset link for valid email
-- ✅ **TC_FP_02.1**: Validation error for invalid email format
-- ✅ **TC_FP_02.2**: Error for unregistered email
-- ✅ **TC_FP_03.1**: Navigate back to login from forgot password
-
----
-
-## ⚠️ Important: Update Selectors
-
-The `login.page.ts` file contains **placeholder selectors**. You must update them with actual selectors from your application:
-
-### How to Find Correct Selectors
-
-#### Option 1: Using Playwright Inspector (Recommended)
-```bash
-npx playwright codegen https://smart-hr-fe.vercel.app/login
-```
-- Opens browser with code generator
-- Click on elements to generate selectors
-- Copy the selectors to `login.page.ts`
-
-#### Option 2: Browser DevTools
-1. Open app in Chrome
-2. Right-click on element → "Inspect"
-3. Look for: `data-testid`, `id`, `name`, `aria-label`, `role`
-4. Use most stable selector
-
-### Selectors to Update in `login.page.ts`
-
-```typescript
-// Email input - update this
-readonly emailInput: Locator = this.page.locator('YOUR_EMAIL_SELECTOR');
-
-// Password input - update this
-readonly passwordInput: Locator = this.page.locator('YOUR_PASSWORD_SELECTOR');
-
-// Password visibility toggle - update this
-readonly passwordVisibilityIcon: Locator = this.page.locator('YOUR_TOGGLE_SELECTOR');
-
-// Sign In button - update this
-readonly signInButton: Locator = this.page.locator('YOUR_SIGNIN_BUTTON_SELECTOR');
-
-// And so on for other elements...
-```
-
----
-
-## 🔍 Selector Best Practices (Priority Order)
-
-1. **data-testid** (Most Stable) - `[data-testid="email-input"]`
-2. **aria-label** - `[aria-label="Email"]`
-3. **role** - `[role="button"]`
-4. **name** - `input[name="email"]`
-5. **id** - `#email-input`
-6. **type** - `input[type="email"]`
-7. **placeholder** - `input[placeholder*="email"]`
-8. **Text content** - `button:has-text("Sign In")`
-9. **XPath** (Least Stable - Avoid)
-
----
-
-## 📊 Test Execution Flow
-
-```
-1. Tests Start
-   ↓
-2. Navigate to Login Page (beforeEach)
-   ↓
-3. Verify UI Elements Visible
-   ↓
-4. Test Scenario Execution
-   ├─ Fill fields
-   ├─ Click buttons
-   ├─ Wait for actions
-   └─ Assert results
-   ↓
-5. Capture Screenshots (on failure)
-   ↓
-6. Generate Report
-   ↓
-7. Tests Complete
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Issue: Selector Not Found
-**Solution**: Update selector in `login.page.ts`
-```bash
-# Use Playwright Inspector to find correct selector
-npx playwright codegen https://smart-hr-fe.vercel.app/login
-```
-
-### Issue: Tests Timeout
-**Solution**: Increase timeout in `playwright.config.ts`
-```typescript
-timeout: 60000, // 60 seconds instead of 30
-```
-
-### Issue: Password Toggle Not Working
-**Solution**: Check if icon selector is correct and element is visible
-```bash
-# Run test in debug mode
-npm run test:debug
-```
-
-### Issue: Login Fails But Works Manually
-**Solution**: Check if page navigation is complete
-- Ensure proper wait conditions
-- Use `page.waitForLoadState('networkidle')`
-- Add explicit waits for expected elements
-
----
-
-## 📚 File Descriptions
-
-### `playwright.config.ts`
-- Main Playwright configuration
-- Sets timeouts, reporters, browser options
-- Configured for: headless: false (visible browser), sequential execution
-- Sets up HTML report generation
-
-### `package.json`
-- NPM project metadata
-- Defines all dependencies (Playwright, TypeScript, types)
-- Defines convenient npm scripts for running tests
-
-### `test-data.json`
-- Centralized configuration for test data
-- Stores credentials, URLs, test data values
-- Easy to switch between environments
-- **IMPORTANT**: Don't commit to Git if using real credentials
-
-### `base.page.ts`
-- Base class for all page objects
-- Contains common methods: click, fill, getText, assertions, waits
-- Provides logging for debugging
-- Extends Playwright's Page class
-
-### `login.page.ts`
-- Specific page object for login page
-- Defines all selectors for login and forgot password
-- Contains high-level methods: `loginWithValidCredentials()`, `togglePasswordVisibility()`, etc.
-- All tests use methods from this class
-
-### `login.spec.ts`
-- Test specification file with all test cases
-- Organized by test scenario using `test.describe()`
-- Each test is well-commented
-- Uses login page object methods
-
----
-
-## 🔐 Security Considerations
-
-### Test Credentials
-- **NEVER commit** real credentials to Git
-- Store in `test-data.json` locally (don't commit)
-- Use `.env` file for sensitive data
-- Add to `.gitignore`
-
-### Best Practice:
-```json
-// config/test-data.json (LOCAL ONLY - not committed)
-{
-  "testUsers": {
-    "admin": {
-      "username": "alex.morgan@smart-hr.com",
-      "password": "8A1HdsuUgrZR"
-    }
-  }
-}
-```
-
----
-
-## 📈 Next Steps After Setup
-
-1. ✅ Copy all files to your project
-2. ✅ Run `npm install`
-3. ✅ Update selectors in `login.page.ts` using Playwright Inspector
-4. ✅ Run `npm run test:login` to verify everything works
-5. ✅ Fix any failing tests using debug mode
-6. ✅ Commit to GitHub
-7. ✅ Integrate with CI/CD (GitHub Actions - future phase)
-
----
-
-## 💡 Tips for Success
-
-### Debugging Tests
-```bash
-# See browser while tests run
-npm run test:headed
-
-# Interactive mode with live reload
-npm run test:ui
-
-# Full debug mode with inspector
-npm run test:debug
-```
-
-### Recording Selectors
-```bash
-# Auto-generate selectors by interacting with app
-npm run codegen
-```
-
-### Viewing Reports
-```bash
-# Opens detailed HTML report with screenshots
-npm run test:report
-```
-
----
-
-## 📞 Common Questions
-
-**Q: Do I need to update selectors?**  
-A: Yes! The provided selectors are placeholders. Use Playwright Inspector to find the actual selectors.
-
-**Q: Can I run tests in parallel?**  
-A: Not in current config. Set `fullyParallel: true` in `playwright.config.ts` if you want parallel execution.
-
-**Q: What if test credentials don't work?**  
-A: Verify credentials are correct and account hasn't been locked. Check application login manually.
-
-**Q: How do I add more test cases?**  
-A: Add new `test()` blocks to `login.spec.ts`. Use existing tests as templates.
-
-**Q: Can I use other browsers?**  
-A: Yes! Uncomment Firefox and WebKit sections in `playwright.config.ts`.
-
----
-
-## ✅ Verification Checklist
-
-Before running tests, ensure:
-
-- [ ] Node.js v23.6.1 installed (`node -v`)
-- [ ] npm v10.9.2 installed (`npm -v`)
-- [ ] Git configured (`git config --list`)
-- [ ] Project directory created
-- [ ] All files copied to correct locations
-- [ ] `npm install` completed
-- [ ] `npx playwright install` completed
-- [ ] Selectors updated in `login.page.ts`
-- [ ] Git remote configured
-- [ ] Test data configured with valid credentials
-
----
-
-## 🚀 You're Ready!
-
-Everything is set up. Now:
+| `npm test` | Run all 59 tests headlessly |
+| `npm run test:login` | Run login module only |
+| `npm run test:headed` | Run with visible browser (`HEADLESS=false`) |
+| `npm run test:ui` | Open the Playwright interactive UI |
+| `npm run test:debug` | Run in debug mode with inspector |
+| `npm run test:report` | Open the last HTML report |
+| `npm run codegen` | Record new selectors via browser interaction |
+
+To target a specific module:
 
 ```bash
-cd hr-profile-management-automation
-npm run test:login
+npx playwright test tests/specs/menu/
+npx playwright test tests/specs/dashboard/
+npx playwright test tests/specs/employees/
 ```
 
-Your tests should execute successfully! 🎉
+To run with a visible browser:
+
+```bash
+HEADLESS=false npx playwright test
+```
 
 ---
 
-## 📞 Need Help?
+## Claude Code Skills
 
-Refer to:
-- **SETUP_INSTRUCTIONS.md** - Detailed setup steps
-- **E2E_WORKFLOW.md** - Complete workflow guide
-- **PROJECT_STRUCTURE.md** - Directory structure details
-- Playwright Docs: https://playwright.dev/
-- Test Case Details: User story in `docs/user-stories/`
+This project includes seven slash commands for Claude Code that automate the most repetitive parts of the development and testing workflow. Type any of these in your Claude Code session.
 
 ---
 
-**Happy Testing! 🧪✨**
+### `/run-tests [module]`
+
+Run the test suite and organise all evidence into a clean timestamped session folder.
+
+**Arguments:** `login` | `menu` | `dashboard` | `employees` | `all` (default)
+
+**What it does:**
+1. Runs the specified tests (or all 59)
+2. Creates `test-results/YYYY-MM-DD_HH-MM-SS/` after the run
+3. Moves HTML/JSON/JUnit reports → `reports/`
+4. Collects screenshots + videos → `evidence/`
+5. Deletes raw per-test folders
+6. Writes `session-summary.md` with per-test pass/fail table and error details
+
+**Usage examples:**
+```
+/run-tests
+/run-tests login
+/run-tests employees
+```
+
+---
+
+### `/inspect-page <url-path>`
+
+Run a headless Playwright inspection against any page in the app and get a structured map of all interactive elements with recommended Playwright selectors.
+
+**Arguments:** URL path, e.g. `/profile`, `/employees/new`, `/designations`
+
+**What it returns:** Headings, inputs (with IDs/placeholders/accept), selects (with option labels), buttons (text/aria-label), nav links (href), table headers (aria-sort), dialog roles.
+
+**Usage examples:**
+```
+/inspect-page /profile
+/inspect-page /employees/new
+/inspect-page /designations
+```
+
+Use this before writing a new POM to discover all real selectors without guessing.
+
+---
+
+### `/automate-module <user-story-file>`
+
+Read a user story, inspect the live app, create the POM and spec files, run tests headlessly, and fix any failures.
+
+**Arguments:** Path to the user story markdown file
+
+**What it does:**
+1. Reads the user story and extracts all TC_XXX test cases
+2. Inspects the relevant app pages for real selectors
+3. Creates `tests/pages/<module>.page.ts` (POM)
+4. Creates `tests/specs/<module>/<module>.spec.ts`
+5. Runs tests and fixes any failures
+6. Reports total tests written and passing
+
+**Usage examples:**
+```
+/automate-module Docs/user-stories/Profile.md
+/automate-module Docs/user-stories/Designations.md
+```
+
+---
+
+### `/fix-tests [module]`
+
+Run tests for a module, diagnose each failure by inspecting the live app, patch selectors or assertions, and rerun until all pass.
+
+**Arguments:** `login` | `menu` | `dashboard` | `employees` | `all` (default)
+
+**Handles these failure patterns:**
+- Selector/locator not found → re-inspects the live app
+- Assertion value mismatch → checks actual app behaviour
+- Navigation/URL mismatch → updates `waitForURL` patterns
+- Race conditions → adds `waitForVisible` or switches to `networkidle`
+- Native confirm dialog blocking navigation → adds `page.once('dialog', ...)`
+
+**Usage examples:**
+```
+/fix-tests
+/fix-tests employees
+/fix-tests dashboard
+```
+
+---
+
+### `/commit-module <module-name>`
+
+Stage the correct files for a given module, write a properly formatted commit message, and push to GitHub.
+
+**Arguments:** `login` | `menu` | `dashboard` | `employees` | `create-employee` | `docs` | `config` | `all`
+
+**What it does:**
+1. Stages only the files belonging to the module (never `git add .` blindly)
+2. Writes a commit message following the project convention: `feat: add <Module> module E2E tests (<TC range>)`
+3. Commits with `Co-Authored-By: Claude Sonnet 4.6` footer
+4. Pushes to `origin/main`
+
+**Usage examples:**
+```
+/commit-module employees
+/commit-module docs
+/commit-module login
+```
+
+---
+
+### `/update-docs`
+
+Sync `Docs/test-data.json` with `config/test-data.json` and rewrite `Docs/DELIVERABLES_SUMMARY.md` to accurately reflect all modules, file counts, test counts, and available skills.
+
+**Arguments:** None
+
+**What it does:**
+1. Counts tests in every spec file
+2. Mirrors `config/test-data.json` → `Docs/test-data.json`
+3. Rewrites `Docs/DELIVERABLES_SUMMARY.md` with current inventory
+4. Commits and pushes
+
+**Usage:**
+```
+/update-docs
+```
+
+Run this after finishing any new module to keep documentation current.
+
+---
+
+### `/new-module <module-name>`
+
+Full end-to-end pipeline for a brand-new module — the composition of all other skills.
+
+**Arguments:** Module name, e.g. `Profile`, `Designations`, `Opportunities`
+
+**What it does:**
+1. Checks for `Docs/user-stories/<Module>.md` (stop if missing)
+2. Inspects all relevant app pages
+3. Creates POM and spec files
+4. Runs and fixes tests
+5. Commits the module
+6. Updates documentation
+
+**Usage examples:**
+```
+/new-module Profile
+/new-module Designations
+/new-module Opportunities
+```
+
+This is the single command to run at the start of each new module.
+
+---
+
+## Recommended Workflow for a New Module
+
+```
+1. Place user story → Docs/user-stories/<Module>.md
+2. /new-module <Module>            ← does everything automatically
+   — or step-by-step:
+   /inspect-page /<path>           ← discover real selectors
+   /automate-module Docs/user-stories/<Module>.md
+   /fix-tests <module>
+   /commit-module <module>
+   /update-docs
+3. /run-tests <module>             ← verify + capture evidence
+```
+
+---
+
+## Key Technical Notes
+
+- **Headless by default.** Set `HEADLESS=false` env var to see the browser during a run.
+- **Screenshots and videos** are recorded for every test (not just failures). They land in the timestamped session folder when using `/run-tests`.
+- **`waitForLoadState('networkidle')`** is required on most pages in headless mode — `domcontentloaded` returns before React mounts the form inputs.
+- **File upload inputs** have dynamic IDs on each page load; use the `accept` attribute as the stable selector: `input[accept*="image/png"]`, `input[accept*=".pdf,.doc,.docx"]`.
+- **Duplicate IDs** in the Create Employee form (Certification, Achievement, Experience all reuse `#title` and `#description`): use XPath `//p[normalize-space()="Certification"]/following::input[@id="title"][1]` to scope to the correct section.
+- **Native confirm dialogs** appear when cancelling a form with unsaved data. Handle with `page.once('dialog', d => d.accept())` immediately before the click.
+- **Exact text matching**: use `p:text-is("Active")` (not `:has-text`) to avoid "Inactive" being matched by "Active".
+- **Employee ID** is a MongoDB ObjectId (`6a299e9eb6f820f4a02538dc`) when no custom ID is set.
+- **Git authentication**: use a classic PAT (`ghp_` prefix). Fine-grained PATs fail for `git push` even when the API shows `push: true`.
+
+---
+
+## Test Credentials
+
+| Field | Value |
+|-------|-------|
+| URL | https://smart-hr-fe.vercel.app |
+| Username | alex.morgan@smart-hr.com |
+| Password | 8A1HdsuUgrZR |
+| Role | Admin |
+
+---
+
+## Repository
+
+https://github.com/nuwanthiuwu/hr-profile-management-automation
