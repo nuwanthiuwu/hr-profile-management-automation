@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+npm-debug.log
+package-lock.json
+yarn.lock
+
+# Test artifacts
+test-results/
+.playwright/
+playwright-report/
+blob-report/
+
+# Environment variables - NEVER COMMIT CREDENTIALS!
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Playwright cache
+/test-results/
+/playwright/.cache/
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# MacOS
+.DS_Store
+
+# Test data (if contains real credentials)
+config/test-data.json

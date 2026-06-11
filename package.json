@@ -1,0 +1,36 @@
+{
+  "name": "hr-profile-management-automation",
+  "version": "1.0.0",
+  "description": "End-to-End QA Automation for HR Profile Management System - Admin Login Module using Playwright and TypeScript",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:login": "playwright test tests/specs/login/",
+    "test:forgot-password": "playwright test tests/specs/login/forgot-password.spec.ts",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report test-results/reports",
+    "codegen": "playwright codegen https://smart-hr-fe.vercel.app/login",
+    "inspect": "playwright inspector"
+  },
+  "keywords": [
+    "playwright",
+    "automation",
+    "testing",
+    "qa",
+    "e2e",
+    "smart-hr",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3",
+    "dotenv": "^16.4.7"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,39 @@
+{
+  "application": {
+    "baseUrl": "https://smart-hr-fe.vercel.app",
+    "loginUrl": "https://smart-hr-fe.vercel.app/login",
+    "dashboardUrl": "https://smart-hr-fe.vercel.app/dashboard"
+  },
+  "testUsers": {
+    "admin": {
+      "username": "alex.morgan@smart-hr.com",
+      "password": "8A1HdsuUgrZR",
+      "role": "Admin"
+    }
+  },
+  "testData": {
+    "invalidEmail": "invalid.email@test.com",
+    "invalidPassword": "WrongPassword123",
+    "emptyFields": {
+      "username": "",
+      "password": ""
+    },
+    "validEmail": "alex.morgan@smart-hr.com"
+  },
+  "timeouts": {
+    "short": 5000,
+    "medium": 10000,
+    "long": 30000
+  },
+  "environments": {
+    "development": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "staging": {
+      "baseUrl": "https://staging-smart-hr.vercel.app"
+    },
+    "production": {
+      "baseUrl": "https://smart-hr-fe.vercel.app"
+    }
+  }
+}
