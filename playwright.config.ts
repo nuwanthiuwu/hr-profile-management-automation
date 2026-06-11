@@ -43,11 +43,11 @@ export default defineConfig({
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
 
-    /* Screenshot on failure */
-    screenshot: 'only-on-failure',
+    /* Screenshot on every test */
+    screenshot: 'on',
 
-    /* Video on failure */
-    video: 'retain-on-failure',
+    /* Video on every test */
+    video: 'on',
   },
 
   /* Configure projects for major browsers */
@@ -56,7 +56,7 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        headless: false, /* Visible browser for local debugging */
+        headless: process.env.HEADLESS !== 'false',
       },
     },
   ],

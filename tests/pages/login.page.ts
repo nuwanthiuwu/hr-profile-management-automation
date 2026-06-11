@@ -69,13 +69,16 @@ export class LoginPage extends BasePage {
 
   async navigateToForgotPassword(): Promise<void> {
     await this.click(this.forgotPasswordLink);
-    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.waitForLoadState('networkidle');
+    // Wait for the input to be ready — headless mode renders faster and can race
+    await this.waitForVisible(this.forgotPasswordEmailInput, 10000);
   }
 
   async submitForgotPasswordForm(email: string): Promise<void> {
     await this.fill(this.forgotPasswordEmailInput, email);
     await this.click(this.sendResetLinkButton);
-    await this.waitForVisible(this.resetConfirmationMessage);
+    // API call can take a few seconds; use a generous timeout
+    await this.waitForVisible(this.resetConfirmationMessage, 15000);
   }
 
   async submitInvalidEmailToForgotPassword(invalidEmail: string): Promise<void> {
