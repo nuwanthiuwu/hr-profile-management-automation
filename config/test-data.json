@@ -43,6 +43,17 @@
     "experienceOrganization": "Test Corp",
     "experienceJobTitle": "Software Engineer"
   },
+  "cvTemplates": {
+    "templateName": "Auto Test Template",
+    "validDocxPath": "tests/fixtures/test-cv.pdf"
+  },
+  "myProfile": {
+    "firstName": "Alex1",
+    "lastName": "Morgan",
+    "contactNumber": "0771234567",
+    "address": "123 Automation Street",
+    "professionalSummary": "Automation test professional summary."
+  },
   "timeouts": {
     "short": 5000,
     "medium": 10000,
