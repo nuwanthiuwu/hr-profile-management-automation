@@ -54,6 +54,13 @@
     "address": "123 Automation Street",
     "professionalSummary": "Automation test professional summary."
   },
+  "wall": {
+    "postTitle": "Auto Wall Post",
+    "postCategory": "Achievement",
+    "postDescription": "Automated post for E2E testing.",
+    "commentText": "Automated test comment",
+    "replyText": "Automated test reply"
+  },
   "timeouts": {
     "short": 5000,
     "medium": 10000,
