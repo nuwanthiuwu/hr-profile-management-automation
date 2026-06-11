@@ -20,6 +20,29 @@
     },
     "validEmail": "alex.morgan@smart-hr.com"
   },
+  "employees": {
+    "searchByName": "alex",
+    "searchByEmail": "testadmin@yop.com",
+    "searchByEmployeeId": "6a299e9eb6f820f4a02538dc",
+    "expectedNameForEmailSearch": "test Admin",
+    "expectedNameForIdSearch": "test Admin",
+    "knownAdminEmail": "alex.morgan@smart-hr.com"
+  },
+  "createEmployee": {
+    "firstName": "Test",
+    "lastName": "Auto",
+    "designation": "Software Engineer",
+    "educationDegree": "Bachelor of Science",
+    "educationInstitution": "Test University",
+    "educationField": "Computer Science",
+    "educationYear": "2020",
+    "certTitle": "AWS Certified Developer",
+    "certOrganization": "Amazon Web Services",
+    "certId": "CERT-TEST-001",
+    "achievementTitle": "Best Employee Award",
+    "experienceOrganization": "Test Corp",
+    "experienceJobTitle": "Software Engineer"
+  },
   "timeouts": {
     "short": 5000,
     "medium": 10000,
