@@ -4,7 +4,7 @@
 **Framework:** Playwright v1.60 + TypeScript  
 **Pattern:** Page Object Model (POM)  
 **Execution:** Headless Chromium, sequential  
-**Total tests:** 59 across 5 modules — all passing
+**Total tests:** 88 across 8 modules — all passing
 
 ---
 
@@ -22,30 +22,41 @@ hr-profile-management-automation/
 ├── tests/
 │   ├── fixtures/
 │   │   ├── test-image.png        # 1×1 PNG for profile picture upload tests
-│   │   └── test-cv.pdf           # Minimal PDF for CV upload tests
+│   │   └── test-cv.pdf           # Minimal PDF for CV upload / document upload tests
 │   ├── pages/                    # Page Object Model files
 │   │   ├── base.page.ts
 │   │   ├── login.page.ts
 │   │   ├── navigation.page.ts
 │   │   ├── dashboard.page.ts
-│   │   └── employee.page.ts
+│   │   ├── employee.page.ts
+│   │   ├── cv-template.page.ts
+│   │   ├── profile.page.ts
+│   │   └── wall.page.ts
 │   └── specs/                    # Test specifications
 │       ├── login/
-│       │   └── login.spec.ts     # TC_LOGIN_01–04, TC_FP_01–03  (12 tests)
+│       │   └── login.spec.ts          # TC_LOGIN_01–04, TC_FP_01–03    (12 tests)
 │       ├── menu/
-│       │   └── menu.spec.ts      # TC_MENU_01–06               (8 tests)
+│       │   └── menu.spec.ts           # TC_MENU_01–06                   (8 tests)
 │       ├── dashboard/
-│       │   └── dashboard.spec.ts # TC_DASH_01–09               (9 tests)
-│       └── employees/
-│           ├── employee.spec.ts        # TC_EMP_01–18           (18 tests)
-│           └── create-employee.spec.ts # TC_CREATE_EMP_01–12    (12 tests)
+│       │   └── dashboard.spec.ts      # TC_DASH_01–09                   (9 tests)
+│       ├── employees/
+│       │   ├── employee.spec.ts       # TC_EMP_01–18                    (18 tests)
+│       │   └── create-employee.spec.ts# TC_CREATE_EMP_01–12             (12 tests)
+│       ├── cv-templates/
+│       │   └── cv-template.spec.ts    # TC_CV_01–04                     (4 tests)
+│       ├── profile/
+│       │   └── profile.spec.ts        # TC_MP_01–11                     (12 tests)
+│       └── wall/
+│           └── wall.spec.ts           # TC_WALL_01–05, TC_POST_01–07    (13 tests)
 ├── Docs/
 │   ├── README.md                 # This file
 │   ├── DELIVERABLES_SUMMARY.md   # Full file inventory and test case listing
 │   ├── test-data.json            # Reference copy of config/test-data.json
 │   └── user-stories/             # Source user stories used for automation
 │       ├── Left menu and Dashboard .md
-│       └── Employee.md
+│       ├── Employee.md
+│       ├── CV templates and My profile.md
+│       └── Wall.md
 └── test-results/                 # Session folders created by /run-tests
     └── YYYY-MM-DD_HH-MM-SS/
         ├── reports/              # index.html, results.json, junit.xml
@@ -80,7 +91,10 @@ npx playwright show-report test-results/reports
 | Dashboard | TC_DASH_01–09 | 9 | All passing |
 | Employee List | TC_EMP_01–18 | 18 | All passing |
 | Create Employee | TC_CREATE_EMP_01–12 | 12 | All passing |
-| **Total** | | **59** | **All passing** |
+| CV Templates | TC_CV_01–04 | 4 | All passing |
+| My Profile | TC_MP_01–11 | 12 | All passing |
+| Wall | TC_WALL_01–05, TC_POST_01–07 | 13 | All passing |
+| **Total** | | **88** | **All passing** |
 
 ---
 
@@ -88,7 +102,7 @@ npx playwright show-report test-results/reports
 
 | Command | What it does |
 |---------|-------------|
-| `npm test` | Run all 59 tests headlessly |
+| `npm test` | Run all 88 tests headlessly |
 | `npm run test:login` | Run login module only |
 | `npm run test:headed` | Run with visible browser (`HEADLESS=false`) |
 | `npm run test:ui` | Open the Playwright interactive UI |
@@ -99,9 +113,13 @@ npx playwright show-report test-results/reports
 To target a specific module:
 
 ```bash
+npx playwright test tests/specs/login/
 npx playwright test tests/specs/menu/
 npx playwright test tests/specs/dashboard/
 npx playwright test tests/specs/employees/
+npx playwright test tests/specs/cv-templates/
+npx playwright test tests/specs/profile/
+npx playwright test tests/specs/wall/
 ```
 
 To run with a visible browser:
@@ -122,10 +140,10 @@ This project includes seven slash commands for Claude Code that automate the mos
 
 Run the test suite and organise all evidence into a clean timestamped session folder.
 
-**Arguments:** `login` | `menu` | `dashboard` | `employees` | `all` (default)
+**Arguments:** `login` | `menu` | `dashboard` | `employees` | `cv-templates` | `profile` | `wall` | `all` (default)
 
 **What it does:**
-1. Runs the specified tests (or all 59)
+1. Runs the specified tests (or all 88)
 2. Creates `test-results/YYYY-MM-DD_HH-MM-SS/` after the run
 3. Moves HTML/JSON/JUnit reports → `reports/`
 4. Collects screenshots + videos → `evidence/`
@@ -136,6 +154,7 @@ Run the test suite and organise all evidence into a clean timestamped session fo
 ```
 /run-tests
 /run-tests login
+/run-tests wall
 /run-tests employees
 ```
 
@@ -145,15 +164,15 @@ Run the test suite and organise all evidence into a clean timestamped session fo
 
 Run a headless Playwright inspection against any page in the app and get a structured map of all interactive elements with recommended Playwright selectors.
 
-**Arguments:** URL path, e.g. `/profile`, `/employees/new`, `/designations`
+**Arguments:** URL path, e.g. `/profile`, `/wall`, `/employees/new`
 
 **What it returns:** Headings, inputs (with IDs/placeholders/accept), selects (with option labels), buttons (text/aria-label), nav links (href), table headers (aria-sort), dialog roles.
 
 **Usage examples:**
 ```
+/inspect-page /wall
 /inspect-page /profile
 /inspect-page /employees/new
-/inspect-page /designations
 ```
 
 Use this before writing a new POM to discover all real selectors without guessing.
@@ -176,7 +195,7 @@ Read a user story, inspect the live app, create the POM and spec files, run test
 
 **Usage examples:**
 ```
-/automate-module Docs/user-stories/Profile.md
+/automate-module Docs/user-stories/Wall.md
 /automate-module Docs/user-stories/Designations.md
 ```
 
@@ -186,20 +205,21 @@ Read a user story, inspect the live app, create the POM and spec files, run test
 
 Run tests for a module, diagnose each failure by inspecting the live app, patch selectors or assertions, and rerun until all pass.
 
-**Arguments:** `login` | `menu` | `dashboard` | `employees` | `all` (default)
+**Arguments:** `login` | `menu` | `dashboard` | `employees` | `cv-templates` | `profile` | `wall` | `all` (default)
 
 **Handles these failure patterns:**
 - Selector/locator not found → re-inspects the live app
 - Assertion value mismatch → checks actual app behaviour
 - Navigation/URL mismatch → updates `waitForURL` patterns
 - Race conditions → adds `waitForVisible` or switches to `networkidle`
+- React event handler issues → switches to `evaluate(el => el.click())`
 - Native confirm dialog blocking navigation → adds `page.once('dialog', ...)`
 
 **Usage examples:**
 ```
 /fix-tests
+/fix-tests wall
 /fix-tests employees
-/fix-tests dashboard
 ```
 
 ---
@@ -208,7 +228,7 @@ Run tests for a module, diagnose each failure by inspecting the live app, patch 
 
 Stage the correct files for a given module, write a properly formatted commit message, and push to GitHub.
 
-**Arguments:** `login` | `menu` | `dashboard` | `employees` | `create-employee` | `docs` | `config` | `all`
+**Arguments:** `login` | `menu` | `dashboard` | `employees` | `create-employee` | `cv-templates` | `profile` | `wall` | `docs` | `config` | `all`
 
 **What it does:**
 1. Stages only the files belonging to the module (never `git add .` blindly)
@@ -218,9 +238,9 @@ Stage the correct files for a given module, write a properly formatted commit me
 
 **Usage examples:**
 ```
-/commit-module employees
+/commit-module wall
+/commit-module profile
 /commit-module docs
-/commit-module login
 ```
 
 ---
@@ -250,7 +270,7 @@ Run this after finishing any new module to keep documentation current.
 
 Full end-to-end pipeline for a brand-new module — the composition of all other skills.
 
-**Arguments:** Module name, e.g. `Profile`, `Designations`, `Opportunities`
+**Arguments:** Module name, e.g. `Designations`, `Opportunities`, `Settings`
 
 **What it does:**
 1. Checks for `Docs/user-stories/<Module>.md` (stop if missing)
@@ -262,7 +282,6 @@ Full end-to-end pipeline for a brand-new module — the composition of all other
 
 **Usage examples:**
 ```
-/new-module Profile
 /new-module Designations
 /new-module Opportunities
 ```
@@ -298,6 +317,11 @@ This is the single command to run at the start of each new module.
 - **Exact text matching**: use `p:text-is("Active")` (not `:has-text`) to avoid "Inactive" being matched by "Active".
 - **Employee ID** is a MongoDB ObjectId (`6a299e9eb6f820f4a02538dc`) when no custom ID is set.
 - **Git authentication**: use a classic PAT (`ghp_` prefix). Fine-grained PATs fail for `git push` even when the API shows `push: true`.
+- **Wall module — Reaction buttons:** The emoji reaction buttons are blocked by a disabled `<button>0 reactions</button>` overlay. Use `evaluate(el => el.click())` to dispatch a JS-level click that bypasses the overlay.
+- **Wall module — Comment submission:** The comment send button is `type="button"` outside any `<form>`. React's `onKeyPress` handler fires on Enter; use `input.press('Enter')` to submit. After pressing Enter, wait `waitForTimeout(2500)` (not `waitForLoadState`) to allow React DOM re-render.
+- **Wall module — Like buttons:** Both post reaction buttons and comment Like buttons require `evaluate(el => el.click())` — Playwright's synthetic pointer/mouse events do not trigger their React `onClick` handlers.
+- **Wall module — Edit dialog:** The edit dialog uses a native `<dialog>` element (`dialog[open]`). The same `#title` and `#category` IDs exist on both the post form and the edit dialog; scope with `dialog[open] #title` to avoid ambiguity.
+- **Wall module — Post creation:** Both `#title` and `#description` are required. Submitting without a description silently fails (no network request is sent).
 
 ---
 
