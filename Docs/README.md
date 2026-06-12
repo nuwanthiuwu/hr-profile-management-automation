@@ -1,4 +1,4 @@
-# HR Profile Management — Playwright Automation Framework
+# HR Profile Management — Playwright Automation Framework - Admin
 
 **Application under test:** https://smart-hr-fe.vercel.app
 **Framework:** Playwright v1.60 + TypeScript
