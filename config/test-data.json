@@ -74,6 +74,10 @@
     "closingDate": "2026-12-31",
     "description": "Automated test opportunity description."
   },
+  "designations": {
+    "searchTerm": "Software",
+    "createTitle": "Auto Designation"
+  },
   "timeouts": {
     "short": 5000,
     "medium": 10000,
