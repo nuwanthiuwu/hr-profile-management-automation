@@ -71,6 +71,7 @@ hr-profile-management-automation/
 │   ├── DELIVERABLES_SUMMARY.md   # Full file inventory and test case listing
 │   ├── test-data.json            # Reference copy of config/test-data.json
 │   └── user-stories/             # Source user stories used for automation
+│       ├── Login.md
 │       ├── Left menu and Dashboard .md
 │       ├── Employee.md
 │       ├── CV templates and My profile.md

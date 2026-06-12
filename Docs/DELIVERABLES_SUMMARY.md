@@ -78,6 +78,7 @@
 
 | File | Modules covered |
 |------|----------------|
+| `Login.md` | TC_LOGIN_01–04, TC_FP_01–03 |
 | `Left menu and Dashboard .md` | TC_MENU_01–06, TC_DASH_01–09 |
 | `Employee.md` | TC_EMP_01–18, TC_CREATE_EMP_01–12 |
 | `CV templates and My profile.md` | TC_CV_01–04, TC_MP_01–11 |
