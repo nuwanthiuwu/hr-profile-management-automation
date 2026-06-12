@@ -61,6 +61,19 @@
     "commentText": "Automated test comment",
     "replyText": "Automated test reply"
   },
+  "people": {
+    "searchByName": "Alex",
+    "expectedNameResult": "Alex1 Morgan",
+    "searchByRole": "Software Engineer",
+    "searchByDepartment": "HR"
+  },
+  "opportunities": {
+    "postTitle": "Auto Opportunity",
+    "department": "Engineering",
+    "location": "Remote",
+    "closingDate": "2026-12-31",
+    "description": "Automated test opportunity description."
+  },
   "timeouts": {
     "short": 5000,
     "medium": 10000,
