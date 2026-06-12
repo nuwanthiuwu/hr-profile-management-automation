@@ -1,111 +1,184 @@
 ---
-description: Run the Playwright test suite, then organize all evidence (reports, screenshots, videos) into a timestamped session folder under test-results/.
+description: Run Playwright tests for a specific module (or all modules) and store results in a timestamped, module-wise folder under test-results/. Each run is preserved so previous results remain accessible.
 ---
 
-Run the Smart HR Playwright test suite and organize all evidence into a clean, timestamped session folder.
+Run Smart HR Playwright tests and store all evidence (HTML report, JSON, JUnit XML, screenshots, videos) in a dedicated timestamped folder organised by module.
 
 ## Arguments
 
-`$ARGUMENTS` — Optional module name to target. Accepted values: `login`, `menu`, `dashboard`, `employees`, `all` (default).
+`$ARGUMENTS` — The module to test. Accepted values:
+
+| Value | Spec path |
+|---|---|
+| `login` | `tests/specs/login/` |
+| `menu` | `tests/specs/menu/` |
+| `dashboard` | `tests/specs/dashboard/` |
+| `employees` | `tests/specs/employees/` |
+| `cv-templates` | `tests/specs/cv-templates/` |
+| `profile` | `tests/specs/profile/` |
+| `wall` | `tests/specs/wall/` |
+| `people` | `tests/specs/people/` |
+| `opportunities` | `tests/specs/opportunities/` |
+| `designations` | `tests/specs/designations/` |
+| `profile-menu` | `tests/specs/profile-menu/` |
+| `all` | *(no filter — runs every spec)* |
+
+If `$ARGUMENTS` is empty, default to `all`.
+If `$ARGUMENTS` is not one of the values above, tell the user the valid values and stop.
+
+---
 
 ## Steps to follow exactly
 
-### 1. Resolve the target module
+### 1. Resolve the target
 
-- If `$ARGUMENTS` is empty or `all` → run all specs: no path filter
-- If `$ARGUMENTS` is `login`     → path: `tests/specs/login/`
-- If `$ARGUMENTS` is `menu`      → path: `tests/specs/menu/`
-- If `$ARGUMENTS` is `dashboard` → path: `tests/specs/dashboard/`
-- If `$ARGUMENTS` is `employees` → path: `tests/specs/employees/`
-- Otherwise tell the user the valid values and stop.
+Map `$ARGUMENTS` to a spec path using the table above.
+Store the module label (e.g. `wall`) as `MODULE`.
+Store the spec path (e.g. `tests/specs/wall/`) as `SPEC_PATH` (empty string for `all`).
 
-### 2. Capture git commit hash
+### 2. Capture the git commit hash
 
 ```bash
 git rev-parse --short HEAD 2>/dev/null || echo "no-git"
 ```
 
-Store this as `GIT_HASH`.
+Store as `GIT_HASH`.
 
-### 3. Run the tests
-
-Run the appropriate command. Capture the full terminal output (it will be needed for the summary).
+### 3. Build the run folder path
 
 ```bash
-# All modules — note the start time:
-START_TIME=$(date '+%Y-%m-%d %H:%M:%S') && npx playwright test 2>&1
-
-# Single module — substitute the correct path from Step 1:
-START_TIME=$(date '+%Y-%m-%d %H:%M:%S') && npx playwright test tests/specs/login/ 2>&1
+TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
+RUN_DIR="test-results/${MODULE}/run_${TIMESTAMP}"
+REPORT_DIR_PATH="${RUN_DIR}/reports"
+ARTIFACTS_DIR="${RUN_DIR}/.artifacts"
+SCREENSHOTS_DIR="${RUN_DIR}/screenshots"
+VIDEOS_DIR="${RUN_DIR}/videos"
 ```
 
-Note the start and end time using `date`.
-
-### 4. Create the timestamped session folder — AFTER the test run
-
-**Important:** create the folder ONLY after tests finish. Playwright wipes test-results/ at the start of a run, which would delete any folder created before.
+### 4. Create the folder structure
 
 ```bash
-SESSION="$(date '+%Y-%m-%d_%H-%M-%S')" && \
-SESSION_DIR="test-results/${SESSION}" && \
-mkdir -p "${SESSION_DIR}/reports" "${SESSION_DIR}/evidence" && \
-echo "Session folder: ${SESSION_DIR}"
+mkdir -p "${REPORT_DIR_PATH}" "${SCREENSHOTS_DIR}" "${VIDEOS_DIR}"
 ```
 
-### 5. Move the HTML/JSON/JUnit reports into the session folder
+Do NOT create `.artifacts/` manually — Playwright creates it.
 
+### 5. Run the tests
+
+Playwright is told to:
+- Write all reports directly into the timestamped `reports/` folder via `REPORT_DIR`
+- Write raw artifacts (screenshots, videos per test) into `.artifacts/` via `--output`
+- Leave all previously organised run folders untouched (it only clears `--output` dir)
+
+**For a single module:**
 ```bash
-cp -r test-results/reports/. "${SESSION_DIR}/reports/"
-echo "Reports moved"
-ls "${SESSION_DIR}/reports/"
+START=$(date '+%Y-%m-%d %H:%M:%S') && \
+REPORT_DIR="${REPORT_DIR_PATH}" npx playwright test "${SPEC_PATH}" \
+  --output "${ARTIFACTS_DIR}" 2>&1
+END=$(date '+%Y-%m-%d %H:%M:%S')
 ```
 
-### 6. Collect screenshots and videos from individual test folders into evidence/
+**For `all`:**
+```bash
+START=$(date '+%Y-%m-%d %H:%M:%S') && \
+REPORT_DIR="${REPORT_DIR_PATH}" npx playwright test \
+  --output "${ARTIFACTS_DIR}" 2>&1
+END=$(date '+%Y-%m-%d %H:%M:%S')
+```
+
+Capture the full terminal output. Note the exit code (`0` = all passed, non-zero = failures).
+
+### 6. Collect screenshots into `screenshots/`
+
+Prefix each file with its parent test-folder name to avoid overwrites (every test produces `test-failed-1.png`).
 
 ```bash
-SESSION_BASENAME=$(basename "${SESSION_DIR}")
-find test-results -mindepth 2 \( -name "*.png" -o -name "*.webm" \) \
-  -not -path "test-results/reports/*" \
-  -not -path "test-results/${SESSION_BASENAME}/*" | while IFS= read -r f; do
+find "${ARTIFACTS_DIR}" -name "*.png" | while IFS= read -r f; do
   parent=$(basename "$(dirname "$f")")
-  ext="${f##*.}"
-  fname="${parent}.${ext}"
-  cp "$f" "${SESSION_DIR}/evidence/${fname}"
+  cp "$f" "${SCREENSHOTS_DIR}/${parent}-$(basename "$f")"
 done
-echo "Evidence files collected: $(ls "${SESSION_DIR}/evidence/" | wc -l | tr -d ' ')"
+echo "Screenshots collected: $(ls "${SCREENSHOTS_DIR}" 2>/dev/null | wc -l | tr -d ' ')"
 ```
 
-### 7. Delete the raw per-test folders and the now-copied reports folder
+### 7. Collect videos into `videos/`
+
+Same prefix strategy — every test produces `video.webm`, so use the test-folder name.
 
 ```bash
-SESSION_BASENAME=$(basename "${SESSION_DIR}")
-find test-results -mindepth 1 -maxdepth 1 -type d ! -name "${SESSION_BASENAME}" -exec rm -rf {} +
-echo "Cleanup done. test-results/ now contains:"
-ls test-results/
+find "${ARTIFACTS_DIR}" -name "*.webm" | while IFS= read -r f; do
+  parent=$(basename "$(dirname "$f")")
+  cp "$f" "${VIDEOS_DIR}/${parent}.webm"
+done
+echo "Videos collected: $(ls "${VIDEOS_DIR}" 2>/dev/null | wc -l | tr -d ' ')"
 ```
 
-### 8. Generate session-summary.md using the summary script
+### 8. Remove the raw `.artifacts/` folder
 
 ```bash
-node scripts/generate-summary.js "${SESSION_DIR}" "<module>" "${GIT_HASH}" "<duration in seconds>"
+rm -rf "${ARTIFACTS_DIR}"
+echo "Artifacts folder removed"
 ```
 
-Example for a login run that took 19.2 seconds:
+### 9. Show the final folder structure
+
 ```bash
-node scripts/generate-summary.js "test-results/2026-06-11_14-30-00" "login" "03b6be7" "19.2"
+echo ""
+echo "── ${RUN_DIR}/"
+echo "   ├── reports/"
+echo "   │   ├── index.html"
+echo "   │   ├── results.json"
+echo "   │   └── junit.xml"
+echo "   ├── screenshots/  ($(ls "${SCREENSHOTS_DIR}" 2>/dev/null | wc -l | tr -d ' ') files)"
+echo "   └── videos/       ($(ls "${VIDEOS_DIR}" 2>/dev/null | wc -l | tr -d ' ') files)"
 ```
 
-The script writes `${SESSION_DIR}/session-summary.md` containing:
-- Date/Time, Module, Git Commit, Duration
-- Results summary table (Total / Passed / Failed / Skipped)
-- Full test results table with ✅ / ❌ per test
-- Failed Tests section (only if failures exist) with error messages
-- Evidence section listing all output files
+Also list all previous runs for this module so the user can see the history:
 
-### 9. Print a final summary to the user
+```bash
+echo ""
+echo "All runs for module '${MODULE}':"
+ls -1 "test-results/${MODULE}/" 2>/dev/null | sort
+```
 
-Tell the user:
-- The session folder path (absolute)
-- Total / Passed / Failed counts
-- Whether any tests failed, and which ones
-- Command to open the HTML report: `npx playwright show-report <SESSION_DIR>/reports`
+### 10. Parse and report results
+
+Parse the Playwright terminal output to extract:
+- Total tests
+- Passed count
+- Failed count
+- Skipped count
+- Duration
+
+Then print a summary in this format:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Module   : wall
+  Run      : run_2026-06-12_14-30-00
+  Commit   : a1b2c3d
+  Started  : 2026-06-12 14:30:00
+  Finished : 2026-06-12 14:32:19
+
+  Total    : 13
+  ✅ Passed : 13
+  ❌ Failed : 0
+  ⏭  Skipped: 0
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Reports  : test-results/wall/run_2026-06-12_14-30-00/reports/
+  View HTML: npx playwright show-report test-results/wall/run_2026-06-12_14-30-00/reports
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+If any tests failed, also list them:
+
+```
+  ❌ Failed tests:
+     - TC_PROFILE_03.1 - Should navigate to the Help & Support page
+```
+
+### 11. Handle failures
+
+If any tests failed:
+- Tell the user which tests failed and what errors were reported
+- Ask whether to re-run only the failing tests or create JIRA bug tickets
+- Do NOT automatically re-run or create tickets without user confirmation

@@ -1,15 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Playwright Configuration for HR Profile Management Automation
- * 
- * Key Settings:
- * - headless: false - Browser visible for local debugging
- * - trace: 'on-first-retry' - Capture traces only on failures
- * - screenshot: 'only-on-failure' - Capture screenshots on failure
- * - Browser: Chromium (Chrome-based)
- * - Sequential execution (not parallel)
- */
+// When run via the /run-tests skill, REPORT_DIR is set to the timestamped
+// module folder (e.g. test-results/wall/run_2026-06-12_14-30-00/reports).
+// Falls back to test-results/reports for ad-hoc runs.
+const reportDir = process.env.REPORT_DIR ?? 'test-results/reports';
 
 export default defineConfig({
   testDir: './tests/specs',
@@ -27,11 +21,11 @@ export default defineConfig({
   /* Sequential workers */
   workers: 1,
 
-  /* Reporter to use */
+  /* Reporters — all output paths driven by REPORT_DIR */
   reporter: [
-    ['html', { outputFolder: 'test-results/reports' }],
-    ['json', { outputFile: 'test-results/reports/results.json' }],
-    ['junit', { outputFile: 'test-results/reports/junit.xml' }],
+    ['html', { outputFolder: reportDir, open: 'never' }],
+    ['json', { outputFile: `${reportDir}/results.json` }],
+    ['junit', { outputFile: `${reportDir}/junit.xml` }],
     ['list'],
   ],
 
