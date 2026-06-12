@@ -54,19 +54,30 @@ test.describe('My Profile Menu (Header) - Smart HR Admin', () => {
   // ────────────────────────────────────────────────────────
 
   test.describe('TC_PROFILE_03 – Help & Support', () => {
-    test('TC_PROFILE_03.1 - Should keep user on the app when Help & Support is selected', async ({ page }) => {
+    test('TC_PROFILE_03.1 - Should navigate to the Help & Support page when selected from the profile menu', async ({ page, context }) => {
       await profileMenuPage.openProfileMenu();
-
-      // Verify Help & Support item is visible and accessible
       await expect(profileMenuPage.helpSupportItem).toBeVisible({ timeout: 3000 });
-      await profileMenuPage.click(profileMenuPage.helpSupportItem);
+
+      // Help & Support may open in a new tab — listen for it
+      const [newPage] = await Promise.all([
+        context.waitForEvent('page', { timeout: 5000 }).catch(() => null),
+        profileMenuPage.click(profileMenuPage.helpSupportItem),
+      ]);
+
       await page.waitForTimeout(1000);
 
-      // User should remain on the application (not logged out or navigated away)
-      expect(page.url()).toContain('smart-hr-fe.vercel.app');
-      expect(page.url()).not.toContain('/login');
-
-      console.log(`✅ Help & Support clicked — user remains on app at: ${page.url()}`);
+      if (newPage) {
+        // Opened in a new tab
+        await newPage.waitForLoadState('load');
+        const helpUrl = newPage.url();
+        console.log(`✅ Help & Support opened in new tab: ${helpUrl}`);
+        expect(helpUrl).not.toBe('about:blank');
+      } else {
+        // Should have navigated in the same tab — URL must change from /dashboard
+        const currentUrl = page.url();
+        console.log(`Help & Support URL after click: ${currentUrl}`);
+        expect(currentUrl).not.toContain('/dashboard');
+      }
     });
   });
 
