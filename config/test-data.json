@@ -78,6 +78,16 @@
     "searchTerm": "Software",
     "createTitle": "Auto Designation"
   },
+  "globalSearch": {
+    "searchByName": "Anderson",
+    "expectedNameResult": "James Anderson",
+    "searchByEmail": "james.anderson",
+    "expectedEmailResult": "James Anderson",
+    "searchByEmployeeId": "RQ-EMP-001",
+    "expectedIdResult": "James Anderson",
+    "searchByDesignation": "Software",
+    "invalidSearchTerm": "XYZINVALID999"
+  },
   "timeouts": {
     "short": 5000,
     "medium": 10000,

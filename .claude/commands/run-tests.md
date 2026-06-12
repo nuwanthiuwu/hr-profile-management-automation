@@ -21,6 +21,8 @@ Run Smart HR Playwright tests and store all evidence (HTML report, JSON, JUnit X
 | `opportunities` | `tests/specs/opportunities/` |
 | `designations` | `tests/specs/designations/` |
 | `profile-menu` | `tests/specs/profile-menu/` |
+| `global-search` | `tests/specs/global-search/` |
+| `notifications` | `tests/specs/notifications/` |
 | `all` | *(no filter — runs every spec)* |
 
 If `$ARGUMENTS` is empty, default to `all`.
