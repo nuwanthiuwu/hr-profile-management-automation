@@ -1,13 +1,24 @@
 {
   "name": "hr-profile-management-automation",
-  "version": "1.0.0",
-  "description": "End-to-End QA Automation for HR Profile Management System - Admin Login Module using Playwright and TypeScript",
+  "version": "2.0.0",
+  "description": "End-to-End QA Automation for HR Profile Management System - Admin, covering 13 modules (Login, Menu, Dashboard, Employees, CV Templates, Profile, Wall, People, Opportunities, Designations, Profile Menu, Global Search, Notifications) using Playwright and TypeScript",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "playwright test",
     "test:login": "playwright test tests/specs/login/",
-    "test:forgot-password": "playwright test tests/specs/login/forgot-password.spec.ts",
+    "test:menu": "playwright test tests/specs/menu/",
+    "test:dashboard": "playwright test tests/specs/dashboard/",
+    "test:employees": "playwright test tests/specs/employees/",
+    "test:cv-templates": "playwright test tests/specs/cv-templates/",
+    "test:profile": "playwright test tests/specs/profile/",
+    "test:wall": "playwright test tests/specs/wall/",
+    "test:people": "playwright test tests/specs/people/",
+    "test:opportunities": "playwright test tests/specs/opportunities/",
+    "test:designations": "playwright test tests/specs/designations/",
+    "test:profile-menu": "playwright test tests/specs/profile-menu/",
+    "test:global-search": "playwright test tests/specs/global-search/",
+    "test:notifications": "playwright test tests/specs/notifications/",
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
@@ -22,14 +33,15 @@
     "qa",
     "e2e",
     "smart-hr",
-    "typescript"
+    "typescript",
+    "page-object-model"
   ],
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.48.2",
-    "@types/node": "^22.10.5",
-    "typescript": "^5.7.3",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^22.19.0",
+    "typescript": "^5.9.3",
     "dotenv": "^16.4.7"
   },
   "dependencies": {}
